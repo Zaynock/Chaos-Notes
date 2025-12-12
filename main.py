@@ -1,3 +1,4 @@
+import json
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 import os
@@ -5,25 +6,22 @@ import os
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-NOTES_FILE = "messages.txt"
+NOTES_FILE = "messages.json"
 
 def load_notes():
     notes = []
     if not os.path.exists(NOTES_FILE):
         return notes
 
-    with open(NOTES_FILE, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if "|" in line:
-                nid, text = line.split("|", 1)
-                notes.append({"id": nid, "text": text})
-    return notes
+    try:
+        with open(NOTES_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, ValueError):
+        return notes
 
 def save_notes(notes):
     with open(NOTES_FILE, "w", encoding="utf-8") as f:
-        for n in notes:
-            f.write(f"{n['id']}|{n['text']}\n")
+        json.dump(notes, f, indent=4)
 
 @app.route("/")
 def index():
