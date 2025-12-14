@@ -33,7 +33,10 @@ def index():
 
 @socketio.on("add_note")
 def on_add(note_text):
+    #strip for removing whitespaces before/after, replace is for rendering multiline
     note_text = note_text.strip()
+    if "<!DOCTYPE html>" and "</html>" not in note_text:
+        note_text = note_text.replace("\n", "<br/>")
     if not note_text:
         return
 
