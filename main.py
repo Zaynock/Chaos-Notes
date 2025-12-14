@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
-import os
+import os, re
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -34,6 +34,9 @@ def index():
 @socketio.on("add_note")
 def on_add(note_text):
     note_text = note_text.strip()
+    # Check if the < and > characters are present in the text
+    if not re.search(r'<[^>]+>', note_text):
+        note_text = note_text.replace("\n", "<br/>")
     if not note_text:
         return
 

@@ -27,6 +27,14 @@
             socket.emit("delete_note", id);
         };
 
+        // When using the "input" textarea, check if user enters. Also if shift is not pressed for multiline
+        document.getElementById('input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendNote();
+            }
+        });
+
         socket.on("note_added", (note) => {
             const li = document.createElement("li");
             li.id = "note-" + note.id;
